@@ -1,436 +1,141 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Escala de Músicas • Artistas</title>
-<style>
-  /* --- Variáveis e temas --- */
-  :root {
-    --bg: #0b0d10;
-    --card: rgba(255,255,255,0.06);
-    --text: #e9eef6;
-    --muted: #99a3b3;
-    --accent: #7c5cff;
-    --accent-2: #00d4ff;
-    --danger: #ff5d5d;
-    --ok: #20c997;
-    --border: rgba(255,255,255,0.12);
-    --shadow: 0 10px 30px rgba(0,0,0,.35);
-    --radius: 16px;
-    transition: all 0.3s ease;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convite - 15 Anos Maria Victoria</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+      background: black; /* Preenche sobras laterais */
+    }
 
-  :root[data-theme='light'] {
-    --bg: #f6f7fb;
-    --card: rgba(255,255,255,0.9);
-    --text: #111827;
-    --muted: #4b5563;
-    --border: rgba(0,0,0,0.08);
-    --shadow: 0 10px 25px rgba(0,0,0,.08);
-  }
+    /* Imagem sempre ajustada */
+    .bg-image {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* mostra a imagem inteira */
+      z-index: 0;
+    }
 
-  :root[data-theme='dark'] {
-    --bg: #0b0d10;
-    --card: rgba(255,255,255,0.06);
-    --text: #e9eef6;
-    --muted: #99a3b3;
-    --border: rgba(255,255,255,0.12);
-    --shadow: 0 10px 30px rgba(0,0,0,.35);
-  }
+    /* Modal por cima */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
 
-  * { box-sizing: border-box; }
-  html, body { height: 100%; margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif; }
-  body {
-    background: radial-gradient(1200px 800px at 10% 0%, rgba(124,92,255,.25), transparent 40%),
-                radial-gradient(1000px 700px at 100% 10%, rgba(0,212,255,.25), transparent 40%),
-                var(--bg);
-    color: var(--text);
-    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
-    transition: background 0.3s ease, color 0.3s ease;
-  }
+    .modal-content {
+      border: 2px solid #ff00cc;
+      border-radius: 1rem;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 0 20px #ff00cc, 0 0 50px #ff00cc;
+      animation: fadeIn 0.4s ease;
+      width: 80%;
+      max-width: 350px;
+      z-index: 20;
+    }
 
-  .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
 
-  header {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 16px;
-    align-items: center;
-    margin-bottom: 18px;
-  }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 30px;
+      border: 2px solid #ff00cc;
+      background: rgb(255, 255, 255);
+      color: white;
+      text-align: center;
+    }
 
-  .title { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .3px; }
-  .logo { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: var(--shadow); position: relative; overflow: hidden; }
-  .logo::after { content: "♪"; position: absolute; inset: 0; display: grid; place-items: center; color: white; font-weight: 900; }
+    .neon-button {
+      background: #ff00cc;
+      color: white;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 50px;
+      border: none;
+      text-shadow: 0 0 10px #ff00cc, 0 0 20px #ff00cc;
+      box-shadow: 0 0 20px #ff00cc, 0 0 40px #ff00cc;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      margin-top: 1rem;
+    }
 
-  .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
-
-  .btn {
-    appearance: none; border: 1px solid var(--border); background: var(--card); color: var(--text);
-    padding: 10px 14px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: .2s ease; backdrop-filter: blur(6px);
-  }
-  .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
-  .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: transparent; color: #fff; }
-  .btn.danger { border-color: transparent; background: linear-gradient(135deg, #ff6b6b, #ff1e56); color: #fff; }
-
-  .searchbar {
-    display: flex; gap: 10px; align-items: center; background: var(--card); border: 1px solid var(--border);
-    padding: 10px 12px; border-radius: 12px; min-width: 260px; backdrop-filter: blur(6px);
-    flex: 1 1 auto;
-  }
-  .searchbar input { flex: 1; background: transparent; border: 0; outline: 0; color: var(--text); font-size: 14px; }
-
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); transition: background 0.3s ease, border 0.3s ease; }
-  .card h3 { margin: 0 0 8px; display: flex; justify-content: space-between; align-items: baseline; font-size: 18px; }
-  .muted { color: var(--muted); font-size: 13px; }
-
-  .song { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px dashed var(--border); transition: border-color 0.3s ease; }
-  .song:first-of-type { border-top: 0; }
-
-  .pill { padding: 4px 8px; border-radius: 20px; border: 1px solid var(--border); background: rgba(255,255,255,.05); font-size: 12px; font-weight: 700; letter-spacing: .3px; }
-
-  .icon-btn { border: 0; background: transparent; color: var(--muted); cursor: pointer; padding: 6px; border-radius: 10px; transition: color 0.2s ease, background 0.2s ease; }
-  .icon-btn:hover { color: var(--text); background: rgba(255,255,255,.07); }
-
-  dialog { border: 1px solid var(--border); background: var(--card); color: var(--text); border-radius: 16px; box-shadow: var(--shadow); width: min(560px, 92vw); padding: 0; backdrop-filter: blur(6px); transition: background 0.3s ease, color 0.3s ease; }
-  dialog::backdrop { backdrop-filter: blur(3px); background: rgba(0,0,0,.3); }
-
-  .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid var(--border); }
-  .modal-body { padding: 16px; }
-  .form { display: grid; grid-template-columns: 1fr 140px; gap: 12px; }
-  .form .row { grid-column: 1 / -1; display: grid; gap: 6px; }
-  .label { font-weight: 700; font-size: 12px; color: var(--muted); }
-  .input, select { width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,.06); color: var(--text); outline: none; transition: .2s ease; }
-  .input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,92,255,.2); }
-  .modal-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px; border-top: 1px solid var(--border); }
-
-  .empty { text-align: center; padding: 48px; border: 2px dashed var(--border); border-radius: var(--radius); color: var(--muted); }
-
-  /* --- Responsividade --- */
-  @media (max-width: 1024px) {
-    header { grid-template-columns: 1fr; row-gap: 12px; }
-    .actions { justify-content: space-between; }
-    .searchbar { min-width: unset; width: 100%; }
-  }
-
-  @media (max-width: 768px) {
-    .grid { grid-template-columns: 1fr; }
-    .form { grid-template-columns: 1fr; }
-    .modal-footer { flex-direction: column; align-items: stretch; }
-    .modal-footer div[style] { justify-content: flex-end; }
-  }
-
-  @media (max-width: 480px) {
-    .btn { padding: 8px 12px; font-size: 14px; }
-    .title div { font-size: 18px; }
-    .muted { font-size: 11px; }
-    .pill { font-size: 11px; padding: 3px 6px; }
-  }
-</style>
-
+    .neon-button:hover {
+      transform: scale(1.1);
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="title">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <div style="font-size: 20px;">Escala de Músicas</div>
-          <div class="muted" style="font-size: 12px;">Artistas adicionam suas músicas e tonalidades</div>
-        </div>
-      </div>
-      <div class="actions">
-        <div class="searchbar" title="Buscar por artista ou música (Ctrl+/)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 21l-4.3-4.3m2.3-6.7a8 8 0 11-16 0 8 8 0 0116 0z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
-          <input id="q" placeholder="Buscar…" />
-        </div>
-        <button class="btn primary" id="addBtn">Adicionar música</button>
-        <button class="btn" id="exportBtn" title="Exportar JSON">Exportar</button>
-        <button class="btn" id="importBtn" title="Importar JSON">Importar</button>
-        <button class="btn danger" id="resetBtn" title="Limpar tudo" disabled>Limpar</button>
-        <button class="btn" id="themeToggle" title="Alternar modo claro/escuro">🌓</button>
-      </div>
-    </header>
 
-    <main id="content"></main>
+  <!-- Imagem ajustada sempre -->
+  <img src="assets/fotoniver.jpeg" alt="Convite 15 anos" class="bg-image">
+
+  <!-- Botão fixo -->
+  <div class="absolute bottom-8 w-full flex justify-center z-10">
+    <button class="neon-button" onclick="openModal()">CONFIRMAR PRESENÇA</button>
   </div>
 
-  <!-- Modal de criação/edição -->
-  <dialog id="songDialog">
-    <form method="dialog" id="songForm">
-      <div class="modal-header">
-        <strong id="dialogTitle">Adicionar música</strong>
-        <button type="button" class="icon-btn" id="closeDialog" aria-label="Fechar">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="form">
-          <div class="row">
-            <label class="label" for="artist">Artista</label>
-            <input class="input" id="artist" name="artist" placeholder="Ex.: Juliana" required />
-          </div>
-          <div class="row">
-            <label class="label" for="title">Música</label>
-            <input class="input" id="title" name="title" placeholder="Ex.: O Fogo Arderá" required />
-          </div>
-          <div>
-            <label class="label" for="key">Tonalidade</label>
-            <select id="key" class="input" name="key" required>
-              <option value="">Selecione…</option>
-              <option>C</option><option>C# / Db</option><option>D</option><option>Eb</option><option>E</option>
-              <option>F</option><option>F# / Gb</option><option>G</option><option>Ab</option><option>A</option>
-              <option>Bb</option><option>B</option>
-            </select>
-          </div>
-          <div>
-            <label class="label" for="notes">Observações</label>
-            <input class="input" id="notes" name="notes" placeholder="Ex.: Versão acústica, 2x refrão" />
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <div class="muted" id="helpText">Dica: digite o nome do artista; se não existir, será criado.</div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn" value="cancel">Cancelar</button>
-          <button class="btn primary" id="saveBtn" value="default">Salvar</button>
-        </div>
-      </div>
-    </form>
-  </dialog>
-
-  <input type="file" id="fileInput" accept="application/json" style="display:none" />
-
-  <template id="artistCardTpl">
-    <section class="card artist-card" data-artist="">
-      <h3>
-        <span class="artist-name"></span>
-        <span class="muted count"></span>
-      </h3>
-      <div class="songs"></div>
-    </section>
-  </template>
-
-  <template id="songRowTpl">
-    <div class="song" data-id="">
-      <div class="title"></div>
-      <span class="pill key"></span>
-      <div>
-        <button class="icon-btn edit" title="Editar">✎</button>
-        <button class="icon-btn del" title="Excluir">🗑</button>
-      </div>
+  <!-- Modal -->
+  <div id="modal" class="modal flex">
+    <div class="modal-content">
+      <h3 class="text-2xl text-pink-400 font-bold mb-4">DIGITE SEU NOME</h3>
+      <form id="confirmForm">
+        <input 
+          type="text" 
+          name="entry.824567417" 
+          placeholder="Digite seu nome" 
+          required>
+        <button type="submit" class="neon-button w-full">
+          Enviar
+        </button>
+      </form>
+      <button onclick="closeModal()" class="mt-4 text-pink-300 underline">Fechar</button>
     </div>
-  </template>
+  </div>
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-    const SUPABASE_URL = 'https://vpgvdqrrzmnzzaaafiiy.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwZ3ZkcXJyem1uenphYWFmaWl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY1ODAwNDEsImV4cCI6MjA3MjE1NjA0MX0.hj9iz-rWAY2qG4Cm_00aqSeDZgcy6pKJehqAmMR82qw';
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    let songs = [];
-
-    async function fetchSongs() {
-      const { data, error } = await supabase.from('songs').select('*').order('artist').order('title');
-      if(error) { console.error(error); return; }
-      songs = data;
-      render();
+  <script>
+    function openModal() {
+      document.getElementById("modal").style.display = "flex";
+    }
+    function closeModal() {
+      document.getElementById("modal").style.display = "none";
     }
 
-    async function addSong(song) {
-      const { data, error } = await supabase.from('songs').insert([song]).select();
-      if(error) { alert('Erro ao adicionar música'); console.error(error); return; }
-      songs.push(data[0]);
-      render();
-    }
-
-    async function updateSong(id, song) {
-      const { data, error } = await supabase.from('songs').update(song).eq('id', id).select();
-      if(error) { alert('Erro ao atualizar música'); console.error(error); return; }
-      const idx = songs.findIndex(s=>s.id===id);
-      songs[idx] = data[0];
-      render();
-    }
-
-    async function deleteSong(id) {
-      const { error } = await supabase.from('songs').delete().eq('id', id);
-      if(error) { alert('Erro ao excluir música'); console.error(error); return; }
-      songs = songs.filter(s=>s.id!==id);
-      render();
-    }
-
-    // --- UI refs ---
-    const content = document.getElementById('content');
-    const dialog = document.getElementById('songDialog');
-    const form = document.getElementById('songForm');
-    const addBtn = document.getElementById('addBtn');
-    const closeDialog = document.getElementById('closeDialog');
-    const q = document.getElementById('q');
-    const exportBtn = document.getElementById('exportBtn');
-    const importBtn = document.getElementById('importBtn');
-    const fileInput = document.getElementById('fileInput');
-    const resetBtn = document.getElementById('resetBtn');
-    const themeToggle = document.getElementById('themeToggle');
-
-    const artistField = document.getElementById('artist');
-    const titleField = document.getElementById('title');
-    const keyField = document.getElementById('key');
-    const notesField = document.getElementById('notes');
-    const dialogTitle = document.getElementById('dialogTitle');
-
-    let editingId = null;
-
-    // --- Render functions ---
-    function groupByArtist(list){
-      const map = new Map();
-      list.forEach(s => {
-        const a = s.artist.trim();
-        if(!map.has(a)) map.set(a, []);
-        map.get(a).push(s);
-      });
-      return new Map([...map.entries()].sort((a,b)=>a[0].localeCompare(b[0],'pt-BR',{sensitivity:'base'})));
-    }
-
-    function render(){
-      const term = q.value.trim().toLowerCase();
-      const filtered = term ? songs.filter(s =>
-        s.artist.toLowerCase().includes(term) || s.title.toLowerCase().includes(term) || (s.key||'').toLowerCase().includes(term)
-      ) : songs;
-
-      content.innerHTML = '';
-      if(filtered.length === 0){
-        const div = document.createElement('div');
-        div.className = 'empty';
-        div.innerHTML = 'Nada por aqui ainda. Clique em <b>Adicionar música</b> para começar.';
-        content.appendChild(div);
-        return;
-      }
-
-      const byArtist = groupByArtist(filtered);
-      const tplCard = document.getElementById('artistCardTpl');
-      const tplRow = document.getElementById('songRowTpl');
-
-      byArtist.forEach((arr, artist) => {
-        const card = tplCard.content.firstElementChild.cloneNode(true);
-        card.dataset.artist = artist;
-        card.querySelector('.artist-name').textContent = artist;
-        card.querySelector('.count').textContent = `${arr.length} música${arr.length>1?'s':''}`;
-
-        const songsWrap = card.querySelector('.songs');
-        arr.sort((a,b)=> a.title.localeCompare(b.title,'pt-BR',{sensitivity:'base'})).forEach(s => {
-          const row = tplRow.content.firstElementChild.cloneNode(true);
-          row.dataset.id = s.id;
-          row.querySelector('.title').textContent = s.title + (s.notes ? ` — ${s.notes}` : '');
-          row.querySelector('.key').textContent = s.key || '-';
-          row.querySelector('.edit').onclick = ()=> openDialog(s.id);
-          row.querySelector('.del').onclick = ()=> {
-            if(confirm(`Excluir "${s.title}" de ${s.artist}?`)) deleteSong(s.id);
-          };
-          songsWrap.appendChild(row);
-        });
-
-        content.appendChild(card);
-      });
-    }
-
-    // --- Dialog ---
-    function openDialog(id=null){
-      editingId = id;
-      if(id){
-        const s = songs.find(x=>x.id===id);
-        artistField.value = s.artist;
-        titleField.value = s.title;
-        keyField.value = s.key;
-        notesField.value = s.notes;
-        dialogTitle.textContent = 'Editar música';
-      } else {
-        form.reset();
-        dialogTitle.textContent = 'Adicionar música';
-      }
-      dialog.showModal();
-    }
-
-    addBtn.onclick = ()=>openDialog();
-    closeDialog.onclick = ()=>dialog.close();
-
-    form.onsubmit = async e=>{
+    document.getElementById("confirmForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      const data = {
-        artist: artistField.value.trim(),
-        title: titleField.value.trim(),
-        key: keyField.value,
-        notes: notesField.value.trim(),
-        created_at: new Date().toISOString()
-      };
-      if(editingId){
-        await updateSong(editingId, data);
-      } else {
-        await addSong(data);
-      }
-      dialog.close();
-    };
+      const formData = new FormData(this);
 
-    q.oninput = render;
-
-    exportBtn.onclick = ()=> {
-      const blob = new Blob([JSON.stringify(songs, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'escala-musicas.json';
-      a.click();
-      URL.revokeObjectURL(url);
-    };
-
-    importBtn.onclick = ()=> fileInput.click();
-    fileInput.onchange = e=>{
-      const file = e.target.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = async ()=> {
-        try {
-          const imported = JSON.parse(reader.result);
-          if(Array.isArray(imported)){
-            for(const s of imported){
-              const song = {...s, created_at: new Date().toISOString()};
-              await addSong(song);
-            }
-          }
-        } catch(err){ alert('Arquivo inválido'); }
-      };
-      reader.readAsText(file);
-    };
-
-    resetBtn.onclick = async ()=> {
-      if(confirm('Deseja realmente apagar todas as músicas?')){
-        for(const s of songs){
-          await supabase.from('songs').delete().eq('id', s.id);
-        }
-        songs = [];
-        render();
-      }
-    };
-
-    // --- Theme toggle ---
-    const root = document.documentElement;
-    let theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    root.setAttribute('data-theme', theme);
-    updateToggleIcon();
-
-    themeToggle.addEventListener('click', () => {
-      theme = (theme === 'dark') ? 'light' : 'dark';
-      root.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
-      updateToggleIcon();
+      fetch("https://docs.google.com/forms/d/e/1FAIpQLSf04i08w0vJwUgfBPFZRoko1mkc_ZXYzpgm14kEWG96vJ_gSw/formResponse", {
+        method: "POST",
+        body: formData,
+        mode: "no-cors"
+      }).then(() => {
+        alert("🎉 Presença confirmada com sucesso!");
+        closeModal();
+      }).catch(() => {
+        alert("❌ Erro ao confirmar. Tente novamente.");
+      });
     });
-
-    function updateToggleIcon() {
-      themeToggle.textContent = theme === 'dark' ? '🌞' : '🌙';
-    }
-
-    // --- Inicializa ---
-    fetchSongs();
   </script>
 </body>
 </html>
