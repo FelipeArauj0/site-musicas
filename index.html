@@ -9,7 +9,7 @@
 </head>
 <body>
 
-  <!-- Imagem ajustada sempre -->
+  <!-- Imagem ajustada -->
   <img src="assets/fotoniver.jpeg" alt="Convite 15 anos" class="bg-image">
 
   <!-- Botão fixo -->
@@ -20,13 +20,30 @@
   <!-- Modal -->
   <div id="modal" class="modal">
     <div class="modal-content">
-      <h3 class="text-2xl text-pink-400 font-bold mb-4">DIGITE SEU NOME</h3>
+      <h3 class="text-2xl text-pink-400 font-bold mb-4">Confirme sua presença</h3>
       <form id="confirmForm">
+        
+        <!-- Nome -->
         <input 
           type="text" 
           name="entry.824567417" 
           placeholder="Digite seu nome" 
           required>
+
+        <!-- Sim/Não -->
+        <div class="mb-4 text-left">
+          <p class="text-white mb-2 font-semibold">Você vai?</p>
+          <label class="inline-flex items-center mr-4">
+            <input type="radio" name="entry.761114038" value="Sim" required>
+            <span class="ml-2 text-white">Sim</span>
+          </label>
+          <label class="inline-flex items-center">
+            <input type="radio" name="entry.761114038" value="Não" required>
+            <span class="ml-2 text-white">Não</span>
+          </label>
+        </div>
+
+        <!-- Botão Enviar -->
         <button type="submit" class="neon-button w-full">
           Enviar
         </button>
@@ -35,6 +52,6 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
